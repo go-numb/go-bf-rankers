@@ -33,7 +33,7 @@ var f *os.File
 var isScanf bool
 
 func init() {
-	flag.BoolVar(&isScanf, "-c", true, "<-c> is use command <name start_date end_date>")
+	flag.BoolVar(&isScanf, "c", true, "<-c> is use command <name start_date end_date>")
 	flag.Parse()
 
 	fmt.Printf(`
