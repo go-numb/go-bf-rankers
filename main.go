@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 
 	"github.com/go-numb/atCoder/snippet"
 
@@ -13,7 +15,6 @@ import (
 
 	"github.com/go-numb/go-bitflyer/v1/hidden/ranking"
 	jsoniter "github.com/json-iterator/go"
-	_ "github.com/mattn/go-sqlite3"
 	log "github.com/sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb"
 	"golang.org/x/sync/errgroup"
@@ -27,6 +28,7 @@ const (
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
+var f *os.File
 
 func init() {
 	fmt.Printf(`
@@ -58,6 +60,20 @@ func New() *Client {
 	}
 
 	l := log.New()
+	projectDir, err := os.Getwd()
+	if err != nil {
+		l.Fatal(err)
+	}
+	f, err = os.OpenFile(
+		filepath.Join(projectDir, "logs", fmt.Sprintf("%s_error.log", time.Now().Format("02-01-2006"))),
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		l.Fatal(err)
+	}
+	l.SetLevel(log.ErrorLevel)
+	l.SetOutput(f)
+	l.SetFormatter(&log.JSONFormatter{})
 
 	return &Client{
 		db:     ldb,
@@ -68,6 +84,9 @@ func New() *Client {
 
 func (p *Client) Close() error {
 	if err := p.db.Close(); err != nil {
+		return err
+	}
+	if err := f.Close(); err != nil {
 		return err
 	}
 	return nil

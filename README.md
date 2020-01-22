@@ -7,6 +7,7 @@ Output data if input console name and start, end date.
 $ git clone https://github.com/go-numb/go-bf-rankers.git
 $ cd go-bf-rankers
 $ go get && go build
+$ mkdir logs
 $ ./go-bf-rankers &
 // works loop for get&save each 15 minutes.
 
