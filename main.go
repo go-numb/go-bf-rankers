@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -29,8 +30,12 @@ const (
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 var f *os.File
+var isScanf bool
 
 func init() {
+	flag.BoolVar(&isScanf, "-c", true, "<-c> is use command <name start_date end_date>")
+	flag.Parse()
+
 	fmt.Printf(`
 # %s
 name 20200101 20200102
@@ -98,7 +103,9 @@ func main() {
 
 	signal := make(chan os.Signal)
 
-	go client.Wait()
+	if isScanf {
+		go client.Wait()
+	}
 	fmt.Println("start program...")
 
 	var eg errgroup.Group
