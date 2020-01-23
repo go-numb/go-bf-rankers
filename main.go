@@ -113,6 +113,7 @@ func main() {
 	eg.Go(func() error {
 		ticker := time.NewTicker(1 * time.Minute)
 		defer ticker.Stop()
+		defer close(signal)
 
 		for {
 			select {
@@ -138,11 +139,12 @@ func main() {
 					continue
 				}
 				for i := range rankers {
-					fmt.Printf("%s - %.2f/1約定平均	%s\n", rankers[i].Nickname, rankers[i].Volume/float64(rankers[i].NumberOfTrades), rankers[i].CreatedAt.Format("2006/01/02 15:04"))
+					fmt.Printf("%s - %.1f - %.2f/1約定平均	%s\n", rankers[i].Nickname, rankers[i].Volume, rankers[i].Volume/float64(rankers[i].NumberOfTrades), rankers[i].CreatedAt.Format("2006/01/02 15:04"))
 				}
+				// 変数解放
+				_ = rankers
 
 			case sig := <-signal:
-				close(signal)
 				return fmt.Errorf("get signal %v", sig)
 			}
 		}
