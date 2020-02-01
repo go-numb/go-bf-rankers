@@ -139,7 +139,7 @@ func main() {
 					continue
 				}
 				for i := range rankers {
-					fmt.Printf("%s - %.1f - %.2f/1約定平均	%s\n", rankers[i].Nickname, rankers[i].Volume, rankers[i].Volume/float64(rankers[i].NumberOfTrades), rankers[i].CreatedAt.Format("2006/01/02 15:04"))
+					fmt.Printf("%s - %.1f	-	%d - %.2f/1約定平均	%s\n", rankers[i].Nickname, rankers[i].Volume, rankers[i].NumberOfTrades, rankers[i].Volume/float64(rankers[i].NumberOfTrades), rankers[i].CreatedAt.Format("2006/01/02 15:04"))
 				}
 				// 変数解放
 				_ = rankers
@@ -170,7 +170,7 @@ func (p *Client) Ranking() error {
 			continue
 		}
 
-		if err := p.db.Put([]byte(fmt.Sprintf("%s:%s:%d", DBTABLERANKING, rankers[i].Nickname, now.UnixNano())), b, nil); err != nil {
+		if err := p.db.Put([]byte(fmt.Sprintf("%s:%s:%d", DBTABLERANKING, strings.Join(strings.Fields(rankers[i].Nickname), ""), now.UnixNano())), b, nil); err != nil {
 			p.Logger.Error(err)
 			continue
 		}
